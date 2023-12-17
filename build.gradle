@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.2.0'
+	id 'org.springframework.boot' version '2.5.3'
 	id 'io.spring.dependency-management' version '1.1.4'
 }
 
@@ -15,9 +15,31 @@ repositories {
 	mavenCentral()
 }
 
+/*
+ * Spring
+ */
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+/**
+ * Other
+ */
+dependencies {
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
+}
+
+/**
+ * Lombok
+ */
+dependencies {
+	compileOnly 'org.projectlombok:lombok:1.18.20'
+	testCompileOnly 'org.projectlombok:lombok:1.18.20'
+	annotationProcessor 'org.projectlombok:lombok:1.18.20'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 }
 
 tasks.named('test') {
