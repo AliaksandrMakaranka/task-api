@@ -31,15 +31,12 @@ public class ProjectController {
 
         projectRepository
                 .findByName(name)
-                .ifPresent(projectEntity -> {
+                .ifPresent(project -> {
                     throw new BadRequestException(String.format("Project \"%s\" already exist.", name));
                 });
 
-        //TODO: uncommit and insert entity in method
-        //https://www.youtube.com/watch?v=gcT5RPfa10U&list=PLb9LG4UcPZxB8QHwxrGUb8wdJmUMd8KOD
-        // 2.33.06 time
-
-        return null;
+        ProjectEntity project = projectRepository.saveAndFlush(ProjectEntity.builder().name(name).build());
+        return projectDtoFactory.makeProjectDto(project);
     }
 }
 

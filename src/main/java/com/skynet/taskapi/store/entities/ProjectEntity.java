@@ -26,14 +26,13 @@ public class ProjectEntity {
     String name;
 
     @Builder.Default
-    Instant updateAt = Instant.now();
+    Instant updatedAt = Instant.now();
 
     @Builder.Default
-    Instant createAt = Instant.now();
+    Instant createdAt = Instant.now();
 
     @Builder.Default
     @OneToMany
     @JoinColumn(name = "project_id")
-    List<TaskStateEntity> taskState = new ArrayList<>();
-
+    List<TaskStateEntity> taskStates = new ArrayList<>();
 }
