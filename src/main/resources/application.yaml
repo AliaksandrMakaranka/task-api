@@ -1,5 +1,5 @@
 server:
-  port: 9120
+  port: 8082
 
 spring:
   datasource:
@@ -7,3 +7,6 @@ spring:
     username: postgres
     password: core76
     driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
