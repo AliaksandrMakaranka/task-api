@@ -47,7 +47,7 @@ public class TaskStateController {
                 .collect(Collectors.toList());
     }
 
-    @PutMapping(CREATE_TASK_STATE)
+    @PostMapping(CREATE_TASK_STATE)
     public TaskStateDto createTaskState(@PathVariable(name = "project_id") Long projectId,
                                         @RequestParam(name = "task_state_name") String taskStateName) {
 
