@@ -31,8 +31,8 @@ public class ProjectController {
     ProjectDtoFactory projectDtoFactory;
 
     public static final String FETCH_PROJECT = "/api/projects";
-    public static final String DELETE_PROJECT = "/api/projects/{project_id}";
     public static final String CREATE_OR_UPDATE_PROJECT = "/api/projects";
+    public static final String DELETE_PROJECT = "/api/projects/{project_id}";
 
     @GetMapping(FETCH_PROJECT)
     public List<ProjectDto> fetchProject(
@@ -42,7 +42,7 @@ public class ProjectController {
 
         Stream<ProjectEntity> projectStream = optionalPrefixName
                 .map(projectRepository::streamAllByNameStartsWithIgnoreCase)
-                .orElseGet(projectRepository::streamAllBy);
+                .orElseGet(projectRepository::streamAll);
 
         return projectStream
                 .map(projectDtoFactory::makeProjectDto)
@@ -88,7 +88,6 @@ public class ProjectController {
 
         return projectDtoFactory.makeProjectDto(savedProject);
     }
-
 
 
     @DeleteMapping(DELETE_PROJECT)
