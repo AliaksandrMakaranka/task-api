@@ -53,20 +53,19 @@ public class ProjectController {
     @PutMapping(CREATE_OR_UPDATE_PROJECT)
     public ProjectDto createOrUpdateProject(
             @RequestParam(value = "project_id", required = false) Optional<Long> optionalProjectId,
-            @RequestParam(value = "project_name", required = false) Optional<String> optionalProjectName
-    ) {
+            @RequestParam(value = "project_name", required = false) Optional<String> optionalProjectName) {
 
         optionalProjectName = optionalProjectName.filter(projectName -> !projectName.trim().isEmpty());
 
         boolean isCreate = !optionalProjectId.isPresent();
 
-        final ProjectEntity project = optionalProjectId
-                .map(this::getProjectOrThrowException)
-                .orElseGet(() -> ProjectEntity.builder().build());
-
-        if (isCreate && optionalProjectName.isPresent()) {
+        if (isCreate && !optionalProjectName.isPresent()) {
             throw new BadRequestException("Project name can't be empty.");
         }
+
+        final ProjectEntity project = optionalProjectId
+                .map(this   ::getProjectOrThrowException)
+                .orElseGet(() -> ProjectEntity.builder().build());
 
         optionalProjectName
                 .ifPresent(projectName -> {
@@ -76,7 +75,7 @@ public class ProjectController {
                             .filter(anotherProject -> !Objects.equals(anotherProject.getId(), project.getId()))
                             .ifPresent(anotherProject -> {
                                 throw new BadRequestException(
-                                        String.format("Project \"%s\" already exist.", projectName)
+                                        String.format("Project \"%s\" already exists.", projectName)
                                 );
                             });
 
@@ -84,7 +83,6 @@ public class ProjectController {
                 });
 
         final ProjectEntity savedProject = projectRepository.saveAndFlush(project);
-
 
         return projectDtoFactory.makeProjectDto(savedProject);
     }
@@ -101,7 +99,8 @@ public class ProjectController {
 
     }
 
-    private ProjectEntity getProjectOrThrowException(Long projectId) {
+    public ProjectEntity getProjectOrThrowException(Long projectId) {
+
         return projectRepository
                 .findById(projectId)
                 .orElseThrow(() ->
