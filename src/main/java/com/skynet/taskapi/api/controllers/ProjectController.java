@@ -1,9 +1,9 @@
 package com.skynet.taskapi.api.controllers;
 
+import com.skynet.taskapi.api.controllers.helpers.ControllerHelper;
 import com.skynet.taskapi.api.dto.AckDto;
 import com.skynet.taskapi.api.dto.ProjectDto;
 import com.skynet.taskapi.api.exceptions.BadRequestException;
-import com.skynet.taskapi.api.exceptions.NotFoundException;
 import com.skynet.taskapi.api.factories.ProjectDtoFactory;
 import com.skynet.taskapi.store.entities.ProjectEntity;
 import com.skynet.taskapi.store.repositories.ProjectRepository;
@@ -30,6 +30,8 @@ public class ProjectController {
 
     ProjectDtoFactory projectDtoFactory;
 
+    ControllerHelper controllerHelper;
+
     public static final String FETCH_PROJECT = "/api/projects";
     public static final String CREATE_OR_UPDATE_PROJECT = "/api/projects";
     public static final String DELETE_PROJECT = "/api/projects/{project_id}";
@@ -49,7 +51,6 @@ public class ProjectController {
                 .collect(Collectors.toList());
     }
 
-
     @PutMapping(CREATE_OR_UPDATE_PROJECT)
     public ProjectDto createOrUpdateProject(
             @RequestParam(value = "project_id", required = false) Optional<Long> optionalProjectId,
@@ -64,7 +65,7 @@ public class ProjectController {
         }
 
         final ProjectEntity project = optionalProjectId
-                .map(this   ::getProjectOrThrowException)
+                .map(controllerHelper::getProjectOrThrowException)
                 .orElseGet(() -> ProjectEntity.builder().build());
 
         optionalProjectName
@@ -87,30 +88,15 @@ public class ProjectController {
         return projectDtoFactory.makeProjectDto(savedProject);
     }
 
-
     @DeleteMapping(DELETE_PROJECT)
     public AckDto deleteProject(@PathVariable("project_id") Long projectId) {
 
-        getProjectOrThrowException(projectId);
+        controllerHelper.getProjectOrThrowException(projectId);
 
         projectRepository.deleteById(projectId);
 
         return AckDto.makeDefault(true);
 
-    }
-
-    public ProjectEntity getProjectOrThrowException(Long projectId) {
-
-        return projectRepository
-                .findById(projectId)
-                .orElseThrow(() ->
-                        new NotFoundException(
-                                String.format(
-                                        "Project with \"%s\" doesn't exist.",
-                                        projectId
-                                )
-                        )
-                );
     }
 
 }

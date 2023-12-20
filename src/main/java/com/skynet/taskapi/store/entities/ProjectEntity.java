@@ -35,4 +35,5 @@ public class ProjectEntity {
     @OneToMany
     @JoinColumn(name = "project_id")
     List<TaskStateEntity> taskStates = new ArrayList<>();
+
 }

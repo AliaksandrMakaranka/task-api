@@ -2,10 +2,20 @@ package com.skynet.taskapi.api.factories;
 
 import com.skynet.taskapi.api.dto.TaskStateDto;
 import com.skynet.taskapi.store.entities.TaskStateEntity;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
+
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
-public class TaskStateDtoFactory {
+public class    TaskStateDtoFactory {
+
+    TaskDtoFactory taskDtoFactory;
 
     public TaskStateDto makeTaskStateDto(TaskStateEntity entity) {
 
@@ -14,6 +24,11 @@ public class TaskStateDtoFactory {
                 .name(entity.getName())
                 .createAt(entity.getCreateAt())
                 .ordinal(entity.getOrdinal())
+                .tasks(entity
+                        .getTasks()
+                        .stream()
+                        .map(taskDtoFactory::makeTaskDto)
+                        .collect(Collectors.toList()))
                 .build();
     }
 }
