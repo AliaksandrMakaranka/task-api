@@ -73,6 +73,20 @@ public class TaskStateController {
                         .build()
         );
 
-        return new TaskStateDto();
+        taskStateRepository
+                .findTaskStateEntityByRightTaskStateIdIsNullAndProjectId(projectId)
+                .ifPresent(anotherTaskState -> {
+
+                    taskState.setLeftTaskState(anotherTaskState);
+
+                    anotherTaskState.setRightTaskState(taskState);
+
+                    taskStateRepository.saveAndFlush(anotherTaskState);
+                });
+
+        final TaskStateEntity savedTaskState = taskStateRepository.saveAndFlush(taskState);
+
+        return taskStateDtoFactory.makeTaskStateDto(savedTaskState);
     }
+
 }
