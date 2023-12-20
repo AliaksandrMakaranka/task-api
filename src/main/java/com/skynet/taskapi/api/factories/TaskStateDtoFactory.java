@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
-public class    TaskStateDtoFactory {
+public class TaskStateDtoFactory {
 
     TaskDtoFactory taskDtoFactory;
 
@@ -23,7 +23,8 @@ public class    TaskStateDtoFactory {
                 .id(entity.getId())
                 .name(entity.getName())
                 .createAt(entity.getCreateAt())
-                .ordinal(entity.getOrdinal())
+                .leftTaskStateId(entity.getLeftTaskState().map(TaskStateEntity::getId).orElse(null))
+                .rightTaskStateId(entity.getRightTaskState().map(TaskStateEntity::getId).orElse(null))
                 .tasks(entity
                         .getTasks()
                         .stream()
@@ -31,4 +32,5 @@ public class    TaskStateDtoFactory {
                         .collect(Collectors.toList()))
                 .build();
     }
+
 }

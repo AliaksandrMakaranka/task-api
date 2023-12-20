@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -22,10 +23,14 @@ public class TaskStateEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     Long id;
 
-    @Column(unique = true)
     String name;
 
-    @NonNull
+    @OneToOne
+    TaskStateEntity leftTaskState;
+
+    @OneToOne
+    TaskStateEntity rightTaskState;
+
     Long ordinal;
 
     @Builder.Default
@@ -35,5 +40,13 @@ public class TaskStateEntity {
     @OneToMany
     @JoinColumn(name = "task_state_id", referencedColumnName = "id")
     List<TaskEntity> tasks = new ArrayList<>();
+
+    public Optional<TaskStateEntity> getLeftTaskState() {
+        return Optional.ofNullable(leftTaskState);
+    }
+
+    public Optional<TaskStateEntity> getRightTaskState() {
+        return Optional.ofNullable(rightTaskState);
+    }
 
 }
