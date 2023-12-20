@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -67,14 +68,17 @@ public class TaskStateController {
                     throw new BadRequestException(String.format("Task state \"%s\" already exist.", taskStateName));
                 });
 
+        Optional<TaskStateEntity> optionalAnotherTaskState = taskStateRepository
+                .findTaskStateEntityByRightTaskStateIdIsNullAndProjectId(projectId);
+
         TaskStateEntity taskState = taskStateRepository.saveAndFlush(
                 TaskStateEntity.builder()
                         .name(taskStateName)
+                        .project(project)
                         .build()
         );
 
-        taskStateRepository
-                .findTaskStateEntityByRightTaskStateIdIsNullAndProjectId(projectId)
+        optionalAnotherTaskState
                 .ifPresent(anotherTaskState -> {
 
                     taskState.setLeftTaskState(anotherTaskState);
