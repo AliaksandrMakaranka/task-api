@@ -38,7 +38,7 @@ public class ProjectController {
 
     @GetMapping(FETCH_PROJECT)
     public List<ProjectDto> fetchProject(
-            @RequestParam(value = "prefix name", required = false) Optional<String> optionalPrefixName) {
+            @RequestParam(value = "prefix_name", required = false) Optional<String> optionalPrefixName) {
 
         optionalPrefixName = optionalPrefixName.filter(prefixName -> !prefixName.trim().isEmpty());
 

@@ -61,19 +61,19 @@ public class TaskStateController {
 
         ProjectEntity project = controllerHelper.getProjectOrThrowException(projectId);
 
-        Optional<TaskStateEntity> optionalAnotherTaskState = Optional.empty();
-
         for (TaskStateEntity taskState : project.getTaskStates()) {
-
             if (taskState.getName().equalsIgnoreCase(taskStateName)) {
                 throw new BadRequestException(String.format("Task state \"%s\" already exist.", taskStateName));
             }
+        }
 
+        Optional<TaskStateEntity> optionalAnotherTaskState = Optional.empty();
+
+        for (TaskStateEntity taskState : project.getTaskStates()) {
             if (!taskState.getRightTaskState().isPresent()) {
                 optionalAnotherTaskState = Optional.of(taskState);
                 break;
             }
-
         }
 
         TaskStateEntity taskState = taskStateRepository.saveAndFlush(
@@ -85,11 +85,8 @@ public class TaskStateController {
 
         optionalAnotherTaskState
                 .ifPresent(anotherTaskState -> {
-
                     taskState.setLeftTaskState(anotherTaskState);
-
                     anotherTaskState.setRightTaskState(taskState);
-
                     taskStateRepository.saveAndFlush(anotherTaskState);
                 });
 
@@ -141,10 +138,8 @@ public class TaskStateController {
             return taskStateDtoFactory.makeTaskStateDto(changeTaskState);
         }
 
-
         Optional<TaskStateEntity> optionalNewLeftTaskState = optionalLeftTaskStateId
                 .map(leftTaskStateId -> {
-
                     if (taskStateId.equals(leftTaskStateId)) {
                         throw new BadRequestException("Left task state id equals changed task state.");
                     }
@@ -174,31 +169,21 @@ public class TaskStateController {
 
         replaceOldTaskStatesPosition(changeTaskState);
 
-
         if (optionalNewLeftTaskState.isPresent()) {
-
             TaskStateEntity newLeftTaskState = optionalNewLeftTaskState.get();
-
             newLeftTaskState.setRightTaskState(changeTaskState);
-
             changeTaskState.setLeftTaskState(newLeftTaskState);
-
         } else {
             changeTaskState.setLeftTaskState(null);
         }
 
         if (optionalNewRightTaskState.isPresent()) {
-
             TaskStateEntity newRightTaskState = optionalNewRightTaskState.get();
-
             newRightTaskState.setLeftTaskState(changeTaskState);
-
             changeTaskState.setRightTaskState(newRightTaskState);
-
         } else {
             changeTaskState.setRightTaskState(null);
         }
-
 
         changeTaskState = taskStateRepository.saveAndFlush(changeTaskState);
 
@@ -227,26 +212,20 @@ public class TaskStateController {
         Optional<TaskStateEntity> optionalOldLeftTaskState = changeTaskState.getLeftTaskState();
         Optional<TaskStateEntity> optionalOldRightTaskState = changeTaskState.getRightTaskState();
 
-
         optionalOldLeftTaskState
                 .ifPresent(it -> {
-
                     it.setRightTaskState(optionalOldRightTaskState.orElse(null));
-
                     taskStateRepository.saveAndFlush(it);
                 });
 
         optionalOldRightTaskState
                 .ifPresent(it -> {
-
                     it.setLeftTaskState(optionalOldLeftTaskState.orElse(null));
-
                     taskStateRepository.saveAndFlush(it);
                 });
     }
 
     private TaskStateEntity getTaskStateOrThrowException(Long taskStateId) {
-
         return taskStateRepository
                 .findById(taskStateId)
                 .orElseThrow(() ->
